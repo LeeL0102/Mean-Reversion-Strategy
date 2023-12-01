@@ -1,0 +1,28 @@
+//@version=5
+strategy("Mean Reversion Strategy", overlay=true)
+
+// 参数设置
+length = input(20, title="SMA Length")
+stdDevMultiplier = input(2.0, title="Standard Deviation Multiplier")
+
+// 计算SMA和标准差
+smaLine = ta.sma(close, length)
+stdDev = ta.stdev(close, length)
+upperBand = smaLine + stdDevMultiplier * stdDev
+lowerBand = smaLine - stdDevMultiplier * stdDev
+
+// 定义买入和卖出条件
+longCondition = close < lowerBand
+shortCondition = close > upperBand
+
+// 执行策略
+if (longCondition)
+    strategy.entry("Long", strategy.long)
+
+if (shortCondition)
+    strategy.close("Long")
+
+// 绘制SMA和波动范围
+plot(smaLine, title="SMA", color=color.blue)
+plot(upperBand, title="Upper Band", color=color.red)
+plot(lowerBand, title="Lower Band", color=color.green)
